@@ -128,4 +128,28 @@ $client = $builder->withLog($log)
   ->build();
 ```
 
+### Create
+```php
+$event = new stdClass;
+$event->type = 'Event';
+$event->StartDateTime = $someDateTime;
+$event->EndDateTime = $otherDateTime;
+$event->DurationInMinutes = $minutes;
+$event->ActivityDateTime = $someDateTime;
+$event->OwnerId = $ownerId;
+$response = $client->create(array($event), 'Event');
+```
+
+### Update
+You need to get the Id of the object you want to edit. ($idDecouverte)
+
+```php
+//Creating the Decouverte
+$decouverte = new stdClass;
+$decouverte->type = 'Decouverte__c';
+$decouverte->Id = $idDecouverte;
+$decouverte->Commentaires__c = 'Some comments';
+$response = $client->update(array($decouverte), 'Decouverte__c');
+```
+
 All requests to the Salesforce API, as well as the responses and any errors that it returns, will now be logged.
