@@ -517,7 +517,7 @@ class Client extends AbstractHasDispatcher implements ClientInterface
 
         for ($i = 0; $i < count($results); $i++) {
 
-            // If the param was an (s)object, set itâ€™s Id field
+            // If the param was an (s)object, set it’s Id field
             if (is_object($params[$i])
                 && (!isset($params[$i]->Id) || null === $params[$i]->Id)
                 && $results[$i] instanceof Result\SaveResult) {
@@ -584,7 +584,13 @@ class Client extends AbstractHasDispatcher implements ClientInterface
      */
     protected function init()
     {
-        // If thereâ€™s no session header yet, this means we havenâ€™t yet logged in
+        if (function_exists("apc_fetch") && apc_exists('loginResult')) {
+            $apcLoginResult = apc_fetch('loginResult');
+            if ($apcLoginResult != false) {
+                $this->setLoginResult($apcLoginResult);
+            }
+        }
+        // If there’s no session header yet, this means we haven’t yet logged in
         if (!$this->getSessionHeader()) {
             $this->doLogin($this->username, $this->password, $this->token);
         }
@@ -636,6 +642,10 @@ class Client extends AbstractHasDispatcher implements ClientInterface
         $this->loginResult = $loginResult;
         $this->setEndpointLocation($loginResult->getServerUrl());
         $this->setSessionId($loginResult->getSessionId());
+
+        if (function_exists("apc_store")) {
+            apc_store('loginResult', $this->loginResult, 3600);
+        }
     }
 
     /**
